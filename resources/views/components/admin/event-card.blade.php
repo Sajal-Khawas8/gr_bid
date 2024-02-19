@@ -85,9 +85,7 @@
                         <td class="border border-gray-800 p-2">{{ $product->name }}</td>
                         <td class="border border-gray-800 p-2">{{ $product->category }}</td>
                         <td class="border border-gray-800 p-2">{{ $product->condition }}</td>
-                        <td class="border border-gray-800 p-2">
-                            <address class="not-italic">{{ $product->description }}</address>
-                        </td>
+                        <td class="border border-gray-800 p-2 max-w-96 truncate">{{ $product->description }}</td>
                         <td class="border border-gray-800 p-2">${{ number_format($product->starting_bid, 2) }}</td>
                     </tr>
                     @endforeach

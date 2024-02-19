@@ -32,6 +32,7 @@
             </dl>
         </div>
     </div>
+    @role("admin")
     <div class="space-y-4">
         <x-shared.anchor-button href="{{ $updateAction }}" class="!px-2">
             <x-icons.edit class="w-6 h-6" />
@@ -45,5 +46,6 @@
             </x-shared.form.submit-button>
         </form>
     </div>
+    @endrole
 
 </article>

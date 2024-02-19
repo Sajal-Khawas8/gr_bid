@@ -25,6 +25,10 @@
 <section id="events" class="px-16 py-8 space-y-4">
     <h2 class="text-3xl font-semibold">Trending Events</h2>
     <p class="text-gray-700">See what's popular across thousands of items.</p>
+    @if($liveEvents->isEmpty())
+    <p class="text-gray-500 text-center text-4xl font-semibold">There are no live events. Please check upcoming events
+    </p>
+    @else
     <div class="flex lg:items-center lg:h-[700px] flex-col lg:flex-row gap-6 py-6">
         <div class="flex-1 h-full grid lg:block">
             <x-client.event-card :event="$liveEvents->first()" />
@@ -43,7 +47,9 @@
         <span>View All</span>
         <x-icons.right-arrow class="w-5 h-5" />
     </a>
+    @endif
 </section>
+
 
 {{-- Upcoming Events --}}
 <section class="px-16 py-8 space-y-4">

@@ -32,8 +32,8 @@
             <div>
                 <select name="condition" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600">
                     <option value="0">Select Condition</option>
-                    <option value="new" @selected($product->condition === "new")>New</option>
-                    <option value="old" @selected($product->condition === "old")>Second Hand</option>
+                    <option value="new" @selected($product->condition === "New")>New</option>
+                    <option value="old" @selected($product->condition === "Old")>Second Hand</option>
                 </select>
                 <x-shared.form.error name="condition" />
             </div>

@@ -8,6 +8,7 @@ use App\Models\Inventory;
 use App\Models\Location;
 use App\Models\ProductImage;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +26,7 @@ class InventoryController extends Controller
                 ->filter(request(["category", "condition", "location", "search"]))
                 ->where("added_by", auth()->user()->uuid)
                 ->lazy();
-                
+
         $additionalData = cache()->remember("additionalInventoryData", now()->addDays(30), function () {
             $categories = Category::all();
             $locations = Location::all();
@@ -75,7 +76,7 @@ class InventoryController extends Controller
             "bid" => ["bail", "required", "numeric", "decimal:0,2"],
             "category" => ["bail", "required", "exists:categories,name"],
             "condition" => ["bail", "required", "in:new,old"],
-            "old_months" => ["bail", "required_if:condition,old", "integer"],
+            "old_months" => ["bail", "nullable", "required_if:condition,old", "integer"],
             "images" => ["required"],
             "images.*" => ["image"],
             "locations" => ["required"],
@@ -103,7 +104,6 @@ class InventoryController extends Controller
                 ]);
             }
         }
-
         return redirect("/dashboard/inventory")->with("success", "Item Added Successfully");
     }
 
@@ -172,7 +172,7 @@ class InventoryController extends Controller
             "location" => $attributes["location"] ?? $product->location,
         ]);
 
-        foreach ($req->file('images') as $image) {
+        foreach ($req->file('images') ?? [] as $image) {
             $imageName = $image->storeAs("inventory", uniqid());
             ProductImage::create([
                 "url" => $imageName,
