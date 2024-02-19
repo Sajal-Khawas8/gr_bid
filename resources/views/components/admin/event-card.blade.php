@@ -59,7 +59,12 @@
 <div id="modal-{{ $event->id }}"
     class="absolute inset-0 z-50 bg-gray-200/90 justify-center px-6 py-4 items-center hidden">
     <article class="space-y-4 flex flex-col">
-        <h2 class="font-semibold text-2xl text-center">Items in {{ $event->name }}</h2>
+        <div class="relative">
+            <h2 class="font-semibold text-2xl text-center">Items in {{ $event->name }}</h2>
+            <x-shared.anchor-button href="/dashboard/events/downloadItems/{{ $event->id }}" class="absolute top-0 right-0 !w-fit">
+                Export
+            </x-shared.anchor-button>
+        </div>
         <div class="flex-1 flex items-center justify-center overflow-auto">
             <table class="text-center border border-b-2 border-gray-800 border-separate border-spacing-0">
                 <thead class="sticky top-0 bg-indigo-500 text-white">

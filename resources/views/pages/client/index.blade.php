@@ -2,6 +2,15 @@
 
 @section("main")
 
+@if ($liveEvents->isEmpty() && !$upcomingEvent)
+<section class="px-16 py-10 h-screen bg-slate-200 flex items-center justify-center">
+    <div>
+        <h1 class="font-bold text-5xl">Coming Soon...</h1>
+    </div>
+</section>
+
+@else
+
 {{-- Intro Section --}}
 <section class="px-16 py-10 h-screen bg-slate-200 flex items-center">
     <div>
@@ -41,11 +50,12 @@
     <h2 class="text-3xl font-semibold">Upcoming Events</h2>
     <p class="text-gray-700">See what's the next event waiting for you.</p>
     @empty($upcomingEvent)
-    <p class="text-gray-500 text-center text-4xl font-semibold">There are no upcoming events. Please check live events</p>
+    <p class="text-gray-500 text-center text-4xl font-semibold">There are no upcoming events. Please check live events
+    </p>
     @else
     <div class="lg:h-[700px] py-6">
         <div class="h-full grid lg:block">
-            <x-client.event-card :event="$upcomingEvent"/>
+            <x-client.event-card :event="$upcomingEvent" />
         </div>
     </div>
     <a href="/upcomingEvents" class="text-blue-500 font-medium flex gap-2 items-center justify-end">
@@ -54,4 +64,6 @@
     </a>
     @endempty
 </section>
+@endif
+
 @endsection

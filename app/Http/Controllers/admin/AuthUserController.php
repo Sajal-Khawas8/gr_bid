@@ -34,7 +34,7 @@ class AuthUserController extends Controller
             "profilePicture" => [File::image()],
             "address" => ["nullable", "min:3"],
             "current_password" => ["bail", "required", "current_password"],
-            "password" => ["bail", "required", Password::min(8)->mixedCase()->numbers()->symbols()->rules(["max:16"])]
+            "password" => ["bail", "required", Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()->rules(["max:16"])]
         ]);
         $userData = [
             "name" => $attributes["name"] ?? $user->name,

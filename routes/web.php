@@ -41,6 +41,7 @@ Route::middleware(['auth', 'role:admin|manager|employee'])->prefix('/dashboard')
     Route::get('/', [EventController::class,'index']);
     Route::controller(EventController::class)->prefix('/events')->group(function () {
         Route::get('/', 'index');
+        Route::get('/downloadItems/{event}', 'export');
         Route::get('/addEvent', 'create');
         Route::post('/addEvent', 'store');
         Route::get('/updateEvent/{event}', 'edit');

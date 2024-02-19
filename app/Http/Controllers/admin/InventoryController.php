@@ -50,7 +50,7 @@ class InventoryController extends Controller
         $this->authorize("create", Inventory::class);
         $categories = Category::lazy();
         if ($categories->isEmpty()) {
-            return back()->with("error", "Please at least one Category before adding Items!");
+            return back()->with("error", "Please add at least one Category before adding Items!");
         }
         $locations = auth()->user()->load("locations")->locations;
         if ($locations->isEmpty()) {

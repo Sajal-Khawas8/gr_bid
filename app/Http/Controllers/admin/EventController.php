@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Exports\InventoryExport;
 use App\Http\Controllers\Controller;
+use App\Jobs\DownloadInventory;
 use App\Models\Event;
 use App\Models\EventItem;
 use App\Models\Inventory;
@@ -14,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EventController extends Controller
 {
@@ -171,5 +174,10 @@ class EventController extends Controller
         EventItem::where("event_id", $event->id)->delete();
         $event->delete();
         return redirect("/dashboard/events")->with("success", "Event deleted Successfully.");
+    }
+
+    public function export(Event $event)
+    {
+        return Excel::download(new InventoryExport($event->items), "items.xlsx");
     }
 }
