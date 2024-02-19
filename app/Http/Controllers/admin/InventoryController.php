@@ -17,6 +17,16 @@ use Illuminate\Validation\Rules\File;
 
 class InventoryController extends Controller
 {
+    private function getLocations()
+    {
+        $userLocations = auth()->user()->load("locations")->locations;
+        if ($userLocations->isEmpty()) {
+            $userLocations = Location::all(['name as location_name']);
+        }
+        $userLocations = $userLocations->pluck('location_name');
+        return $userLocations;
+    }
+
     public function index()
     {
         $this->authorize("viewAny", Inventory::class);
@@ -57,12 +67,7 @@ class InventoryController extends Controller
     public function store(Request $req)
     {
         $this->authorize("create", Inventory::class);
-        $userLocations = auth()->user()->load("locations")->locations;
-        if ($userLocations->isEmpty()) {
-            $userLocations = Location::all(['name as location_name']);
-        }
-        $userLocations = $userLocations->pluck('location_name');
-
+        $userLocations= $this->getLocations();
         $attributes = $req->validate([
             "name" => ["bail", "required", "min:3", "max:50", "regex:/^[a-zA-Z\s]*$/"],
             "bid" => ["bail", "required", "numeric", "decimal:0,2"],
@@ -142,18 +147,28 @@ class InventoryController extends Controller
     {
         $this->authorize("update", $product);
 
-        $userLocations = auth()->user()->load("locations")->locations->pluck("location_name");
+        $userLocations= $this->getLocations();
 
         $attributes = $req->validate([
             "name" => ["bail", "nullable", "min:3", "max:50", "regex:/^[a-zA-Z\s]*$/"],
             "bid" => ["bail", "nullable", "numeric", "decimal:0,2"],
             "category" => ["exists:categories,name"],
             "condition" => ["in:new,old"],
+            "old_months" => ["nullable", "integer"],
             "images" => [Rule::requiredIf($product->load("images")->images->isEmpty())],
             "images.*" => ["image"],
             "location" => [Rule::in($userLocations)],
             "description" => ["nullable", "min:3"],
         ]);
+
+        if ($attributes['condition']==="new") {
+            $product->old_months=null;
+            $product->save();
+        } elseif ($attributes['condition']==="old" && is_null($attributes["old_months"])) {
+            return back()->with("error","Please enter how many months old this item is!!");
+        } else {
+            $product->old_months = $attributes["old_months"];
+        }
 
         $product->update([
             "name" => $attributes["name"] ?? $product->name,

@@ -23,20 +23,31 @@
                 <select name="category" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600">
                     <option value="0">Select Category</option>
                     @foreach ($categories as $category)
-                    <option value="{{ $category->name }}" @selected($product->category ===
+                    <option value="{{ $category->name }}" @selected(old("category") ? old("category")===$category->
+                        name : $product->category ===
                         $category->name)>{{ $category->name }}</option>
                     @endforeach
                 </select>
                 <x-shared.form.error name="category" />
             </div>
             <div>
-                <select name="condition" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600">
+                <select name="condition" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600"
+                    onchange="this.value==='old' ? document.getElementById('old_duration').classList.remove('hidden') : document.getElementById('old_duration').classList.add('hidden')">
                     <option value="0">Select Condition</option>
-                    <option value="new" @selected($product->condition === "New")>New</option>
-                    <option value="old" @selected($product->condition === "Old")>Second Hand</option>
+                    <option value="new" @selected(old("condition") ? old("condition")==="new" : $product->condition ===
+                        "New")>New</option>
+                    <option value="old" @selected(old("condition") ? old("condition")==="old" : $product->condition ===
+                        "Old") >Second Hand</option>
                 </select>
                 <x-shared.form.error name="condition" />
             </div>
+        </div>
+        <div id="old_duration" class="{{ old("condition") ? (old("condition")==="old" ? '' : 'hidden') : ($product->condition === "Old" ? '' : 'hidden') }}">
+            <div class="flex items-center gap-4">
+                <label for="old_duration" class="min-w-fit">Months since purchase:</label>
+                <x-shared.form.input type="number" name="old_months" placeholder="Months since purchase" :value="old('old_months', $product->old_months)" />
+            </div>
+            <x-shared.form.error name="old_months" />
         </div>
         <div>
             <select name="location" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600">
