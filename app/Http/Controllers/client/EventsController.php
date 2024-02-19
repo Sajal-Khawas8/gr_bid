@@ -11,13 +11,13 @@ class EventsController extends Controller
 {
     public function index()
     {
-        $events = Event::where("start", "<=", now())->where("end", ">", now())->lazy();
+        $events = Event::where("start", "<=", now())->where("end", ">", now())->orderBy("start")->lazy();
         return view("pages.client.live-events", compact("events"));
     }
 
     public function upcomingEvents()
     {
-        $events = Event::where("start", ">", now())->lazy();
+        $events = Event::where("start", ">", now())->orderBy("start")->lazy();
         return view("pages.client.upcoming-events", compact("events"));
     }
 

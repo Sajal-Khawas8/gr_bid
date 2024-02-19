@@ -17,7 +17,7 @@
             <div class="col-span-2 flex flex-wrap gap-2 items-center">
                 <dt class="font-medium">Total Items:</dt>
                 <dd class="flex gap-10 items-center">
-                    <p>3</p>
+                    <p>{{ $event->items->count() }}</p>
                     <x-shared.button onclick="document.getElementById('modal-{{ $event->id }}').style.display='flex'">
                         View Event Items</x-shared.button>
                 </dd>

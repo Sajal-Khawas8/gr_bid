@@ -27,23 +27,15 @@ class InventoryController extends Controller
                 ->where("added_by", auth()->user()->uuid)
                 ->lazy();
 
-        $additionalData = cache()->remember("additionalInventoryData", now()->addDays(30), function () {
-            $categories = Category::all();
-            $locations = Location::all();
+            $categories = Category::lazy();
+            $locations = Location::lazy();
             $users = User::role(["admin", "manager", "employee"])
                 ->with("roles")->get()
                 ->groupBy(function ($user) {
                     return $user->roles->first()->name;
                 });
-            return compact("categories", "locations", "users");
-        });
 
-        return view("pages.admin.inventory", [
-            "inventory" => $inventory,
-            "categories" => $additionalData["categories"],
-            "locations" => $additionalData["locations"],
-            "users" => $additionalData["users"]
-        ]);
+        return view("pages.admin.inventory", compact("inventory","categories", "locations", "users"));
     }
 
     public function create()

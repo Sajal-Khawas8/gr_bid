@@ -36,26 +36,19 @@ class EventController extends Controller
         $this->authorize("viewAny", Event::class);
         $events = auth()->user()->hasRole('admin') ?
             Event::where("end", ">", now())
-                ->filter(request(["organized_by", "search", "start", "end"]))
+                ->filter(request(["organized_by", "search", "start", "end"]))->orderBy("start")
                 ->lazy() :
             Event::where("end", ">", now())->where("organized_by", auth()->user()->uuid)
-                ->filter(request(["search", "start", "end"]))
+                ->filter(request(["search", "start", "end"]))->orderBy("start")
                 ->lazy();
 
-        $additionalData = cache()->remember("additionalEventData", now()->addDays(30), function () {
-            $locations = Location::all();
-            $users = User::role(["admin", "manager", "employee"])
-                ->with("roles")->get()
-                ->groupBy(function ($user) {
-                    return $user->roles->first()->name;
-                });
-            return compact("locations", "users");
-        });
-        return view("pages.admin.events", [
-            "events" => $events,
-            "locations" => $additionalData["locations"],
-            "users" => $additionalData["users"]
-        ]);
+        $locations = Location::lazy();
+        $users = User::role(["admin", "manager", "employee"])
+            ->with("roles")->get()
+            ->groupBy(function ($user) {
+                return $user->roles->first()->name;
+            });
+        return view("pages.admin.events", compact("events", "locations", "users"));
     }
 
     public function create()
