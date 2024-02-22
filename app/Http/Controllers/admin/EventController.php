@@ -171,6 +171,6 @@ class EventController extends Controller
 
     public function export(Event $event)
     {
-        return Excel::download(new InventoryExport($event->items), "items.xlsx");
+        return Excel::download(new InventoryExport($event->items), "items-in-" . $event->name .".xlsx");
     }
 }

@@ -10,15 +10,23 @@ use App\Http\Controllers\admin\ManagerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\EventsController as clientEventsController;
+use App\Http\Controllers\client\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
     Route::middleware('guest')->group(function () {
-        Route::get('/login', [AuthController::class, 'create'])->name('login');
+        Route::get('/login', 'create')->name('login');
         Route::post('/login', 'store')->name('login');
     });
 
     Route::post('/logout', 'destroy')->middleware('auth')->name('logout');
+});
+
+Route::controller(UserController::class)->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/register', 'create');
+        Route::post('/register', 'store');
+    });
 });
 
 // Route::middleware('client')->group(function () {
@@ -38,7 +46,7 @@ Route::prefix("/")->group(function () {
 
 Route::middleware(['auth', 'role:admin|manager|employee'])->prefix('/dashboard')->group(function () {
 
-    Route::get('/', [EventController::class,'index']);
+    Route::get('/', [EventController::class, 'index']);
     Route::controller(EventController::class)->prefix('/events')->group(function () {
         Route::get('/', 'index');
         Route::get('/downloadItems/{event}', 'export');
