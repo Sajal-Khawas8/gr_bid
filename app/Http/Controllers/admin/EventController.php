@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Exports\InventoryExport;
 use App\Http\Controllers\Controller;
 use App\Jobs\DownloadInventory;
+use App\Jobs\ExportInventory;
 use App\Models\Event;
 use App\Models\EventItem;
 use App\Models\Inventory;
@@ -172,5 +173,8 @@ class EventController extends Controller
     public function export(Event $event)
     {
         return Excel::download(new InventoryExport($event->items), "items-in-" . $event->name .".xlsx");
+
+        // ExportInventory::dispatchSync($event->items, $event->name);
+        // return back();
     }
 }
