@@ -82,11 +82,27 @@ class User extends Authenticatable
         return $this->hasMany(Event::class, 'organized_by', 'uuid');
     }
 
-    public function scopeFilter($query)
+    public function scopeFilter($query, array $filters)
     {
-        if (request('search')) {
-            $query->where('name', 'like', '%' . request('search') . '%')
-            ->orWhere('email', 'like', '%' . request('search') . '%');
-        }
+        // if (request('search')) {
+        //     $query->where('name', 'like', '%' . request('search') . '%')
+        //         ->orWhere('email', 'like', '%' . request('search') . '%');
+        // }
+
+        $query->when($filters['search'] ?? false,
+            fn($query, $search) =>
+            $query->where(fn($query) =>
+                $query->where('name', 'like', '%' . request('search') . '%')
+                    ->orWhere('email', 'like', '%' . request('search') . '%')
+            )
+        );
+
+        $query->when($filters['role'] ?? false,
+            fn($query, $role) =>
+            $query->where(fn($query) =>
+                $query->whereHas('roles', fn($query) => $query->where('name', $role))
+                ->orWhere('uuid', $role)
+            )
+        );
     }
 }

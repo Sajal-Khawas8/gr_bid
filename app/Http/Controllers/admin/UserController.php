@@ -14,12 +14,17 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Validation\Rules\Password;
 
-class ManagerController extends Controller
+class UserController extends Controller
 {
     public function index()
     {
-        $managers = User::role("manager")->filter()->with('locations')->lazy();
-        return view("pages.admin.managers", compact("managers"));
+        $users = User::role(["manager", "employee"])->with(['locations'])->filter(request(["role", "search"]))->lazy();
+        $groupedUsers = User::role(["manager", "employee"])->with(['locations', 'roles'])->get()
+            ->groupBy(function ($user) {
+                return $user->roles->first()->name;
+            });
+        // return $users;
+        return view("pages.admin.users", compact("users", "groupedUsers"));
     }
 
     public function create()
@@ -28,9 +33,9 @@ class ManagerController extends Controller
 
         $locations = Location::lazy();
         if ($locations->count() === 0) {
-            return back()->with("error", "Please add atleast one location before adding manager");
+            return back()->with("error", "Please add atleast one location before adding users");
         }
-        return view("pages.admin.add-manager", compact("locations"));
+        return view("pages.admin.add-user", compact("locations"));
     }
 
     public function store(Request $req)
@@ -44,7 +49,8 @@ class ManagerController extends Controller
             "locations" => ["required"],
             "locations.*" => ["exists:locations,name"],
             "address" => ["required", "min:3"],
-            "password" => ["bail", "required", Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()->rules(["max:16"]), "confirmed"]
+            "password" => ["bail", "required", Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()->rules(["max:16"]), "confirmed"],
+            "role" => ["in:manager,employee"]
         ]);
 
         $userData = [
@@ -56,23 +62,23 @@ class ManagerController extends Controller
         if ($req->hasFile("profilePicture")) {
             $userData["image"] = $attributes["profilePicture"]->store("users");
         }
-        $user = User::create($userData)->assignRole('manager');
+        $user = User::create($userData)->assignRole($attributes['role']);
         foreach ($attributes['locations'] as $location) {
             UserLocation::create([
                 'user_id' => $user->uuid,
                 'location_name' => Location::where('name', $location)->first()->name
             ]);
         }
-        return redirect("/dashboard/managers")->with("success", "New Manager has been registered Successfully!");
+        return redirect("/dashboard/users")->with("success", "New User has been registered Successfully!");
     }
 
     public function edit(User $user)
     {
         $this->authorize("update", $user);
-        $user->load("locations");
+        $user->load(["locations", "roles"]);
         $locations = Location::lazy();
         // return $user->locations;
-        return view("pages.admin.edit-manager", compact("user", "locations"));
+        return view("pages.admin.edit-user", compact("user", "locations"));
     }
 
     public function update(Request $req, User $user)
@@ -84,6 +90,7 @@ class ManagerController extends Controller
             "locations.*" => ["exists:locations,name"],
             "profilePicture" => [File::image()],
             "address" => ["nullable", "min:3"],
+            "role" => ["in:manager,employee"]
         ]);
 
         $locationsToRemove = $req->locations ?
@@ -126,18 +133,19 @@ class ManagerController extends Controller
 
         // Updating user data
         $user->update($userData);
+        $user->syncRoles($attributes['role']);
 
-        return redirect("/dashboard/managers")
-            ->with("success", "Manager Data Updated Successfully");
+        return redirect("/dashboard/users")
+            ->with("success", "User Data Updated Successfully");
     }
 
     public function destroy(User $user)
     {
         $this->authorize("delete", $user);
-        Inventory::where("added_by", $user->uuid)->update(["added_by"=>auth()->user()->uuid]);
-        Event::where("organized_by", $user->uuid)->update(["organized_by"=>auth()->user()->uuid]);
+        Inventory::where("added_by", $user->uuid)->update(["added_by" => auth()->user()->uuid]);
+        Event::where("organized_by", $user->uuid)->update(["organized_by" => auth()->user()->uuid]);
         UserLocation::where("user_id", $user->uuid)->delete();
         $user->delete();
-        return redirect("/dashboard/managers")->with("success","Manager removed Successfully.");
+        return redirect("/dashboard/users")->with("success", "User removed Successfully.");
     }
 }

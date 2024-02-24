@@ -7,11 +7,22 @@
             <x-shared.form.input name="name" placeholder="Full Name" :value="old('name', $user->name)" />
             <x-shared.form.error name="name" />
         </div>
-        <div>
-            <x-shared.form.input type="email" name="email" placeholder="Email Address"
-                :value="old('email', $user->email)" />
-            <x-shared.form.error name="email" />
+        <div class="grid grid-cols-5 gap-8">
+            <div class="col-span-3">
+                <x-shared.form.input type="email" name="email" placeholder="Email Address"
+                    :value="old('email', $user->email)" />
+                <x-shared.form.error name="email" />
+            </div>
+            <div class="col-span-2">
+                @php
+                $options=['manager', 'employee'];
+                @endphp
+                <x-shared.form.select name="role" label="Select Role" :$options
+                    :dataToMatch="$user->roles->first()->name" />
+                <x-shared.form.error name="role" />
+            </div>
         </div>
+
         <div>
             <div class="flex items-center gap-3">
                 <label for="profilePicture">Choose Profile Picture: </label>
@@ -57,21 +68,17 @@
         </div>
         @if (auth()->user()->hasRole('admin') && auth()->user()->id !== $user->id)
         <div>
-            <fieldset class="space-y-3">
-                <legend>Choose Locations:</legend>
-                <div class="flex gap-4 flex-wrap">
-                    @foreach ($locations as $location)
-                    <label class="flex items-center justify-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="locations[]" class="w-4 h-4 rounded-md accent-indigo-600"
-                            @checked(old('locations') ? in_array($location->name, old('locations')) :
-                        in_array($location->name, $user->locations->pluck('location_name')->toArray()))
-                        value="{{ $location->name }}"> {{ $location->name }}
-                    </label>
+            <div class="flex gap-2 items-center">
+                <label for="locations">Select Locations (You can select more than one):</label>
+                <select name="locations[]" class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 [&>*]:p-0.5" multiple size="1">
+                    @foreach ($locations->pluck('name') as $location)
+                    <option value="{{ $location }}" @selected(old('locations') ? in_array($location, old('locations')) : in_array($location, $user->locations->pluck('location_name')->toArray()))>
+                        {{ $location }}</option>
                     @endforeach
-                </div>
-                <x-shared.form.error name="locations" />
-                <x-shared.form.error name="locations.*" />
-            </fieldset>
+                </select>
+            </div>
+            <x-shared.form.error name="locations" />
+            <x-shared.form.error name="locations.*" />
         </div>
         @else
         <div class="grid grid-cols-2 gap-6">

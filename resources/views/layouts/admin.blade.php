@@ -23,7 +23,7 @@
     <x-shared.message type='error' />
     @endif
 
-    <aside id="admin-nav" class="w-64 h-full px-3 py-2.5 text-lg space-y-8 hidden lg:block absolute inset-0 z-50 lg:static bg-white">
+    <aside id="admin-nav" class="w-64 h-full px-3 py-2.5 text-lg flex flex-col gap-y-8 justify-evenly absolute inset-0 z-50 lg:static bg-white">
         <header class="mx-auto my-3 w-fit">
             <x-icons.app-logo />
         </header>
@@ -49,13 +49,8 @@
                 </li>
                 <li class="flex items-center relative">
                     <x-icons.manager class="w-7 h-7 mx-4" />
-                    <span>Managers</span>
-                    <a href="/dashboard/managers" class="absolute inset-0"></a>
-                </li>
-                <li class="flex items-center relative">
-                    <x-icons.employee class="w-7 h-7 mx-4" />
-                    <span>Employees</span>
-                    <a href="/dashboard/employees" class="absolute inset-0"></a>
+                    <span>Users</span>
+                    <a href="/dashboard/users" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center">
                     <h3 class="text-indigo-600 font-semibold">Others</h3>

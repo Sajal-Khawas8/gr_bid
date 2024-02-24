@@ -6,11 +6,11 @@ use App\Http\Controllers\admin\EmployeeController;
 use App\Http\Controllers\admin\EventController;
 use App\Http\Controllers\admin\InventoryController;
 use App\Http\Controllers\admin\LocationController;
-use App\Http\Controllers\admin\ManagerController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\EventsController as clientEventsController;
-use App\Http\Controllers\client\UserController;
+use App\Http\Controllers\client\UserController as ClientUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -22,7 +22,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'destroy')->middleware('auth')->name('logout');
 });
 
-Route::controller(UserController::class)->group(function () {
+Route::controller(ClientUserController::class)->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/register', 'create');
         Route::post('/register', 'store');
@@ -67,13 +67,13 @@ Route::middleware(['auth', 'role:admin|manager|employee'])->prefix('/dashboard')
         Route::delete('/deleteItem/{product}', 'destroy');
     });
 
-    Route::controller(ManagerController::class)->prefix('/managers')->group(function () {
+    Route::controller(UserController::class)->prefix('/users')->group(function () {
         Route::get('/', 'index');
-        Route::get('/addManager', 'create');
-        Route::post('/addManager', 'store');
-        Route::get('/updateManager/{user:uuid}', 'edit');
-        Route::put('/updateManager/{user:uuid}', 'update');
-        Route::delete('/deleteManager/{user:uuid}', 'destroy');
+        Route::get('/addUser', 'create');
+        Route::post('/addUser', 'store');
+        Route::get('/updateUser/{user:uuid}', 'edit');
+        Route::put('/updateUser/{user:uuid}', 'update');
+        Route::delete('/deleteUser/{user:uuid}', 'destroy');
     });
 
     Route::controller(EmployeeController::class)->prefix('/employees')->group(function () {

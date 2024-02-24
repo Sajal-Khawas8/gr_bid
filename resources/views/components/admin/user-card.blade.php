@@ -1,5 +1,5 @@
-<article class="flex justify-between gap-6">
-    <div class="flex-1 flex items-center gap-4">
+<article class="flex justify-between gap-4">
+    <div class="flex-1 flex items-center flex-wrap xl:flex-nowrap gap-4">
         @empty ($user->image)
         <div class="w-32 h-32 rounded-md bg-gray-600 flex items-center justify-center">
             <x-icons.user class="w-full h-full text-slate-100" />
