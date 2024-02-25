@@ -1,8 +1,11 @@
 @extends("layouts.admin")
 
 @section("main")
+<div class="px-6">
+    {{ Breadcrumbs::render('addEvent') }}
+</div>
 <article class="py-6 space-y-8 overflow-y-auto">
-    <h1 class="text-center text-4xl font-semibold"> Organize a New Event </h1>
+        <h1 class="text-center text-4xl font-semibold"> Organize a New Event </h1>
     <form action="/dashboard/events/addEvent" method="post" enctype="multipart/form-data"
         class="space-y-8 max-w-md mx-auto">
         @csrf

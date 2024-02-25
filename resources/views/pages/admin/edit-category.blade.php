@@ -1,6 +1,9 @@
 @extends("layouts.admin")
 
 @section("main")
+<div class="px-6">
+    {{ Breadcrumbs::render('editCategory', $category) }}
+</div>
 <article class="py-6 space-y-8">
     <h1 class="text-center text-4xl font-semibold">Update Category</h1>
     <form action="/dashboard/categories/updateCategory/{{ $category->name }}" method="post"

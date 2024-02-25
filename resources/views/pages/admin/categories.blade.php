@@ -2,7 +2,7 @@
 
 @section('main')
 <header class="py-2.5 px-6">
-    <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Item Categories</h1>
+    <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Categories</h1>
     <div class="flex items-center gap-2">
         <form action="/dashboard/categories" method="GET" class="text-gray-800 divide-gray-500 relative w-[500px]">
             <x-shared.form.search name="search" placeholder="Search categories" />

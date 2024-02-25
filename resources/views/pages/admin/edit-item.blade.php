@@ -1,8 +1,11 @@
 @extends("layouts.admin")
 
 @section("main")
+<div class="px-6">
+    {{ Breadcrumbs::render('editItem', $product) }}
+</div>
 <article class="py-6 px-8 space-y-8 overflow-y-auto">
-    <h1 class="text-center text-4xl font-semibold"> Update Item </h1>
+        <h1 class="text-center text-4xl font-semibold"> Update Product </h1>
     <form action="/dashboard/inventory/updateItem/{{ $product->id }}" method="post" enctype="multipart/form-data"
         class="space-y-8 max-w-md mx-auto">
         @csrf

@@ -77,15 +77,6 @@ Route::middleware(['auth', 'role:admin|manager|employee'])->prefix('/dashboard')
         Route::delete('/deleteUser/{user:uuid}', 'destroy');
     });
 
-    Route::controller(EmployeeController::class)->prefix('/employees')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/addEmployee', 'create');
-        Route::post('/addEmployee', 'store');
-        Route::get('/updateEmployee/{user:uuid}', 'edit');
-        Route::put('/updateEmployee/{user:uuid}', 'update');
-        Route::delete('/deleteEmployee/{user:uuid}', 'destroy');
-    });
-
     Route::controller(CategoryController::class)->prefix('/categories')->group(function () {
         Route::get('/', 'index');
         Route::get('/addCategory', 'create');

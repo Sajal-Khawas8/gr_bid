@@ -1,6 +1,9 @@
 @extends("layouts.admin")
 
 @section("main")
+<div class="px-6">
+    {{ Breadcrumbs::render('editEvent', $event) }}
+</div>
 <article class="py-6 space-y-8 overflow-y-auto">
     <h1 class="text-center text-4xl font-semibold"> Update Event </h1>
     <form action="/dashboard/events/updateEvent/{{ $event->id }}" method="post" enctype="multipart/form-data"

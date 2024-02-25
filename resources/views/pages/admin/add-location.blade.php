@@ -1,6 +1,9 @@
 @extends("layouts.admin")
 
 @section("main")
+<div class="px-6">
+    {{ Breadcrumbs::render('addLocation') }}
+</div>
 <article class="py-6 space-y-8">
     <h1 class="text-center text-4xl font-semibold">Add New Location</h1>
     <form action="/dashboard/locations/addLocation" method="post" class="space-y-8 max-w-md mx-auto">
