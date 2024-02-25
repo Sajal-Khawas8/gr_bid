@@ -62,9 +62,18 @@ class Inventory extends Model
 
         $query->when($filters['category'] ?? false,
             fn($query, $category) =>
-            $query->where(fn($query) =>
-                $query->where('category', $category)
-            )
+            $query->where(function ($query) use ($category) {
+                $category = array_filter($category, function ($v){
+                    return !is_null($v);
+                });
+                if (!empty($category)) {
+                    $query->where('category', $category[0]);
+                    unset($category[0]);
+                }
+                foreach ($category as $c) {
+                    $query->orWhere('category', $c);
+                }
+            })
         );
 
         $query->when($filters['condition'] ?? false,
@@ -75,10 +84,19 @@ class Inventory extends Model
         );
 
         $query->when($filters['location'] ?? false,
-            fn($query, $location) =>
-            $query->where(fn($query) =>
-                $query->where('location', $location)
-            )
+            fn($query, $locations) =>
+            $query->where(function ($query) use ($locations) {
+                $locations = array_filter($locations, function ($v){
+                    return !is_null($v);
+                });
+                if (!empty($locations)) {
+                    $query->where('location', $locations[0]);
+                    unset($locations[0]);
+                }
+                foreach ($locations as $l) {
+                    $query->orWhere('location', $l);
+                }
+            })
         );
 
         $query->when($filters['added_by'] ?? false,
