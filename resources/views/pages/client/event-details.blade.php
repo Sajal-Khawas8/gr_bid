@@ -4,7 +4,7 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-16 py-8 relative">
     <section class="col-span-2 h-fit space-y-10">
         <div class="h-[600px] aspect-square max-w-full my-5 mx-auto rounded-md bg-gray-300">
-            <img src="{{ Storage::url($event->cover) }}" alt="{{ $event->name }}"
+            <img src="{{ Storage::url($event->cover->url) }}" alt="{{ $event->name }}"
                 class="h-full w-full object-fill rounded-md">
         </div>
         <div class="space-y-6">

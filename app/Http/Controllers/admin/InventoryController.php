@@ -173,7 +173,7 @@ class InventoryController extends Controller
             "location" => $attributes["location"] ?? $product->location,
         ]);
 
-        foreach ($req->file('images') as $image) {
+        foreach ($req->file('images') ?? [] as $image) {
             $product->images()->create([
                 "url" => $image->storeAs("inventory", uniqid() . "." . $image->getClientOriginalExtension())
             ]);

@@ -13,7 +13,7 @@
                     :value="old('email', $user->email)" />
                 <x-shared.form.error name="email" />
             </div>
-            @role('admin')
+            @if(auth()->user()->hasRole('admin') && auth()->user()->uuid !== $user->uuid)
             <div class="w-36">
                 @php
                 $options=['manager', 'employee'];
@@ -22,7 +22,7 @@
                     :dataToMatch="$user->roles->first()->name" />
                 <x-shared.form.error name="role" />
             </div>
-            @endrole
+            @endif
         </div>
 
         <div>

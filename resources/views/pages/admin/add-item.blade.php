@@ -38,8 +38,7 @@
                 <x-shared.form.error name="condition" />
             </div>
         </div>
-        <div id="old_duration"
-            class="{{ (old("condition") && old("condition")==="old") ? '' : 'hidden' }}">
+        <div id="old_duration" class="{{ (old("condition") && old("condition")==="old") ? '' : 'hidden' }}">
             <div class="flex items-center gap-4">
                 <label for="old_duration" class="min-w-fit">Months since purchase:</label>
                 <x-shared.form.input type="number" name="old_months" placeholder="Months since purchase" />
@@ -55,20 +54,20 @@
             <x-shared.form.error name="images.*" />
         </div>
         <div>
-            <fieldset class="space-y-3">
-                <legend>Choose Locations:</legend>
-                <div class="flex gap-4 flex-wrap">
+            <div class="flex gap-2 items-center">
+                <label for="locations">Select Locations (You can select more than one):</label>
+                <select name="locations[]"
+                    class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 [&>*]:p-0.5" multiple
+                    size="1">
                     @foreach ($locations as $location)
-                    <label class="flex items-center justify-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="locations[]" class="w-4 h-4 rounded-md accent-indigo-600"
-                            @checked(old('locations') && in_array($location, old('locations'))) value="{{ $location }}">
-                        {{ $location }}
-                    </label>
+                    <option value="{{ $location }}" @selected(old('locations') && in_array($location,
+                        old('locations')))>
+                        {{ $location }}</option>
                     @endforeach
-                </div>
-                <x-shared.form.error name="locations" />
-                <x-shared.form.error name="locations.*" />
-            </fieldset>
+                </select>
+            </div>
+            <x-shared.form.error name="locations" />
+            <x-shared.form.error name="locations.*" />
         </div>
         <div>
             <x-shared.form.text-area name="description" placeholder="Description" />
