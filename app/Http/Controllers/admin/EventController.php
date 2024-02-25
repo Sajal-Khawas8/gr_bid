@@ -83,8 +83,11 @@ class EventController extends Controller
             "start" => $attributes["start"],
             "end" => $attributes["end"],
             "venue" => $attributes["venue"],
-            "cover" => $attributes["cover"]->store("events"),
             "organized_by" => auth()->user()->uuid,
+        ]);
+
+        $event->cover()->create([
+            "url" => $attributes["cover"]->store('events')
         ]);
 
         foreach ($attributes["items"] as $productId) {
@@ -132,8 +135,10 @@ class EventController extends Controller
         ];
 
         if ($req->hasFile("cover")) {
-            $eventData["cover"] = $attributes["cover"]->store("events");
-            Storage::delete($event->cover);
+            Storage::delete($event->cover->url);
+            $event->cover()->update([
+                "url" => $attributes["cover"]->store("events")
+            ]);
         }
 
         $event->update($eventData);
@@ -166,13 +171,15 @@ class EventController extends Controller
     {
         $this->authorize("delete", $event);
         EventItem::where("event_id", $event->id)->delete();
+        Storage::delete($event->cover->url);
+        $event->cover()->delete();
         $event->delete();
         return redirect("/dashboard/events")->with("success", "Event deleted Successfully.");
     }
 
     public function export(Event $event)
     {
-        return Excel::download(new InventoryExport($event->items), "items-in-" . $event->name .".xlsx");
+        return Excel::download(new InventoryExport($event->items), "items-in-" . $event->name . ".xlsx");
 
         // ExportInventory::dispatchSync($event->items, $event->name);
         // return back();

@@ -107,7 +107,7 @@
                             <x-icons.close-circle class="w-6 h-6 text-black" />
                         </x-shared.button>
                         <div class="py-4">
-                            <img src="{{ Storage::url($event->cover) }}" alt="{{ $event->name }}"
+                            <img src="{{ Storage::url($event->cover->url) }}" alt="{{ $event->name }}"
                                 class="w-52 h-52 mx-auto">
                         </div>
                     </div>

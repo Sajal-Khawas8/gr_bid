@@ -67,6 +67,11 @@ class User extends Authenticatable
         return 'uuid';
     }
 
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'attachable', null, null, 'id');
+    }
+
     public function locations()
     {
         return $this->hasMany(UserLocation::class, 'user_id', 'uuid');

@@ -59,10 +59,13 @@ class UserController extends Controller
             "password" => $attributes["password"],
             "address" => $attributes["address"],
         ];
-        if ($req->hasFile("profilePicture")) {
-            $userData["image"] = $attributes["profilePicture"]->store("users");
-        }
         $user = User::create($userData)->assignRole($attributes['role']);
+        if ($req->hasFile("profilePicture")) {
+            // $userData["image"] = $attributes["profilePicture"]->store("users");
+            $user->image()->create([
+                "url" => $attributes["profilePicture"]->store("users")
+            ]);
+        }
         foreach ($attributes['locations'] as $location) {
             UserLocation::create([
                 'user_id' => $user->uuid,
@@ -127,8 +130,11 @@ class UserController extends Controller
 
         // Checking if file has been uploaded
         if ($req->hasFile("profilePicture")) {
-            $userData["image"] = $attributes["profilePicture"]->store("users");
-            !empty($user->image) && Storage::delete($user->image);
+            // $userData["image"] = $attributes["profilePicture"]->store("users");
+            !empty($user->image) && Storage::delete($user->image->url);
+            $user->image()->update([
+                "url" => $attributes["profilePicture"]->store("users")
+            ]);
         }
 
         // Updating user data
@@ -145,6 +151,8 @@ class UserController extends Controller
         Inventory::where("added_by", $user->uuid)->update(["added_by" => auth()->user()->uuid]);
         Event::where("organized_by", $user->uuid)->update(["organized_by" => auth()->user()->uuid]);
         UserLocation::where("user_id", $user->uuid)->delete();
+        Storage::delete($user->image->url);
+        $user->image()->delete();
         $user->delete();
         return redirect("/dashboard/users")->with("success", "User removed Successfully.");
     }

@@ -14,6 +14,10 @@ class Event extends Model
 
     protected $with=["items"];
 
+    public function cover()
+    {
+        return $this->morphOne(Image::class, "attachable");
+    }
     public function items()
     {
         return $this->hasManyThrough(Inventory::class, EventItem::class, "event_id", "id", "id", "product_id");

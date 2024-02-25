@@ -1,6 +1,6 @@
 <article class="flex items-center flex-wrap gap-10 h-32 bg-white px-6 py-4 rounded-md relative">
     <div class="h-full w-24">
-        <img src="{{ Storage::url($event->cover) }}" alt="{{ $event->name }}" class="h-full w-full object-fill">
+        <img src="{{ Storage::url($event->cover->url) }}" alt="{{ $event->name }}" class="h-full w-full object-fill">
     </div>
     <div class="flex flex-col justify-between h-full">
         <h2 class="text-2xl font-semibold">{{ $event->name }}</h2>

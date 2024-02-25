@@ -6,7 +6,7 @@
         </div>
         @else
         <div class="w-32 h-32 rounded-md">
-            <img src="{{ Storage::url($user->image) }}" alt="{{ $user->name }}"
+            <img src="{{ Storage::url($user->image->url) }}" alt="{{ $user->name }}"
                 class="h-full w-full object-cover rounded-md">
         </div>
         @endif

@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProductImage extends Model
+class Image extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $fillable = ['url'];
 
-    protected $fillable = ["url", "product_id"];
+    public function attachable()
+    {
+        return $this->morphTo();
+    }
 }

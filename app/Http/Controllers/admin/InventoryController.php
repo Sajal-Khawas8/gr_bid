@@ -31,21 +31,20 @@ class InventoryController extends Controller
     {
         $this->authorize("viewAny", Inventory::class);
         $inventory = auth()->user()->hasRole("admin") ?
-            Inventory::with("images")->filter(request(["category", "condition", "location", "added_by", "search"]))->lazy() :
-            Inventory::with("images")
-                ->filter(request(["category", "condition", "location", "search"]))
+            Inventory::filter(request(["category", "condition", "location", "added_by", "search"]))->lazy() :
+            Inventory::filter(request(["category", "condition", "location", "search"]))
                 ->where("added_by", auth()->user()->uuid)
                 ->lazy();
 
-            $categories = Category::lazy();
-            $locations = Location::lazy();
-            $users = User::role(["admin", "manager", "employee"])
-                ->with("roles")->get()
-                ->groupBy(function ($user) {
-                    return $user->roles->first()->name;
-                });
+        $categories = Category::lazy();
+        $locations = Location::lazy();
+        $users = User::role(["admin", "manager", "employee"])
+            ->with("roles")->get()
+            ->groupBy(function ($user) {
+                return $user->roles->first()->name;
+            });
 
-        return view("pages.admin.inventory", compact("inventory","categories", "locations", "users"));
+        return view("pages.admin.inventory", compact("inventory", "categories", "locations", "users"));
     }
 
     public function create()
@@ -67,7 +66,7 @@ class InventoryController extends Controller
     public function store(Request $req)
     {
         $this->authorize("create", Inventory::class);
-        $userLocations= $this->getLocations();
+        $userLocations = $this->getLocations();
         $attributes = $req->validate([
             "name" => ["bail", "required", "min:3", "max:50", "regex:/^[a-zA-Z\s]*$/"],
             "bid" => ["bail", "required", "numeric", "decimal:0,2"],
@@ -94,10 +93,8 @@ class InventoryController extends Controller
             ]);
 
             foreach ($req->file('images') as $image) {
-                $imageName = $image->storeAs("inventory", uniqid());
-                ProductImage::create([
-                    "url" => $imageName,
-                    "product_id" => $item->id,
+                $item->images()->create([
+                    "url" => $image->storeAs("inventory", uniqid() . "." . $image->getClientOriginalExtension())
                 ]);
             }
         }
@@ -124,21 +121,18 @@ class InventoryController extends Controller
 
         $validator = Validator::make($req->all(), [
             "deletedImages" => ['required'],
-            "deletedImages.*" => ['exists:product_images,id'],
         ]);
 
         if ($validator->fails()) {
             return back()->with('error', "Something went wrong! Please try again.");
         }
-        $product->load("images");
         $images = $product->images->pluck('id');
         foreach ($req->deletedImages as $imageId) {
             if ($images->doesntContain($imageId)) {
                 return back()->with('error', "Something went wrong! Please try again.");
             }
-            $imageUrl = ProductImage::find($imageId)->url;
-            ProductImage::where("id", $imageId)->delete();
-            Storage::delete($imageUrl);
+            Storage::delete($product->images->find($imageId)->url);
+            $product->images()->find($imageId)->delete();
         }
         return back()->with("success", "Images deleted successfully.");
     }
@@ -147,7 +141,7 @@ class InventoryController extends Controller
     {
         $this->authorize("update", $product);
 
-        $userLocations= $this->getLocations();
+        $userLocations = $this->getLocations();
 
         $attributes = $req->validate([
             "name" => ["bail", "nullable", "min:3", "max:50", "regex:/^[a-zA-Z\s]*$/"],
@@ -161,11 +155,11 @@ class InventoryController extends Controller
             "description" => ["nullable", "min:3"],
         ]);
 
-        if ($attributes['condition']==="new") {
-            $product->old_months=null;
+        if ($attributes['condition'] === "new") {
+            $product->old_months = null;
             $product->save();
-        } elseif ($attributes['condition']==="old" && is_null($attributes["old_months"])) {
-            return back()->with("error","Please enter how many months old this item is!!");
+        } elseif ($attributes['condition'] === "old" && is_null($attributes["old_months"])) {
+            return back()->with("error", "Please enter how many months old this item is!!");
         } else {
             $product->old_months = $attributes["old_months"];
         }
@@ -179,11 +173,9 @@ class InventoryController extends Controller
             "location" => $attributes["location"] ?? $product->location,
         ]);
 
-        foreach ($req->file('images') ?? [] as $image) {
-            $imageName = $image->storeAs("inventory", uniqid());
-            ProductImage::create([
-                "url" => $imageName,
-                "product_id" => $product->id,
+        foreach ($req->file('images') as $image) {
+            $product->images()->create([
+                "url" => $image->storeAs("inventory", uniqid() . "." . $image->getClientOriginalExtension())
             ]);
         }
 
@@ -196,7 +188,10 @@ class InventoryController extends Controller
         if ($product->loadCount("event")->event_count) {
             return back()->with("error", "This product has been listed in an event. So it can't be deleted.");
         }
-        ProductImage::where("product_id", $product->id)->delete();
+        $product->images()->each(function ($image) {
+            Storage::delete($image->url);
+        });
+        $product->images()->delete();
         $product->delete();
         return redirect("/dashboard/inventory")->with("success", "Product has been deleted Successfully.");
     }

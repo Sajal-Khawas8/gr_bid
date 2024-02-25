@@ -18,7 +18,6 @@ return new class extends Migration
             $table->dateTime('start');
             $table->dateTime('end');
             $table->string('venue');
-            $table->string('cover');
             $table->foreignUuid('organized_by')->constrained('users', 'uuid')->cascadeOnUpdate()->noActionOnDelete();
             $table->softDeletes();
             $table->timestamps();

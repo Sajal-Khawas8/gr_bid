@@ -91,7 +91,7 @@
                 <x-icons.user-circle class="w-10 h-10 text-indigo-500" />
                 @else
                 <div class="w-10 h-10 rounded-full">
-                    <img src="{{ Storage::url(auth()->user()->image) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
+                    <img src="{{ Storage::url(auth()->user()->image->url) }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover rounded-full">
                 </div>
                 @endempty
                 <button type="button" id="admin-menu" class="lg:hidden" onclick='document.getElementById("admin-nav").classList.toggle("hidden")'>
