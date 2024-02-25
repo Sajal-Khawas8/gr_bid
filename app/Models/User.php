@@ -67,6 +67,16 @@ class User extends Authenticatable
         return 'uuid';
     }
 
+    public function setNameAttribute(string $name)
+    {
+        $this->attributes["name"] = ucwords($name);
+    }
+
+    public function setEmailAttribute(string $email)
+    {
+        $this->attributes["email"] = strtolower($email);
+    }
+
     public function image()
     {
         return $this->morphOne(Image::class, 'attachable', null, null, 'id');
@@ -89,11 +99,6 @@ class User extends Authenticatable
 
     public function scopeFilter($query, array $filters)
     {
-        // if (request('search')) {
-        //     $query->where('name', 'like', '%' . request('search') . '%')
-        //         ->orWhere('email', 'like', '%' . request('search') . '%');
-        // }
-
         $query->when($filters['search'] ?? false,
             fn($query, $search) =>
             $query->where(fn($query) =>

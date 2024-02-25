@@ -6,18 +6,20 @@
             <x-shared.form.input name="name" placeholder="Full Name" />
             <x-shared.form.error name="name" />
         </div>
-        <div class="grid grid-cols-5 gap-8">
-            <div class="col-span-3">
+        <div class="flex items-center gap-8">
+            <div class="flex-1">
                 <x-shared.form.input type="email" name="email" placeholder="Email Address" />
                 <x-shared.form.error name="email" />
             </div>
-            <div class="col-span-2">
+            @role("admin")
+            <div class="w-36">
                 @php
                 $options=['manager', 'employee'];
                 @endphp
                 <x-shared.form.select name="role" label="Select Role" :$options />
                 <x-shared.form.error name="role" />
             </div>
+            @endrole
         </div>
         <div>
             <div class="flex items-center gap-3">
@@ -34,7 +36,8 @@
                     class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 [&>*]:p-0.5" multiple
                     size="1">
                     @foreach ($locations->pluck('name') as $location)
-                    <option value="{{ $location }}" @selected(old('locations') && in_array($location, old('locations')))>
+                    <option value="{{ $location }}" @selected(old('locations') && in_array($location,
+                        old('locations')))>
                         {{ $location }}</option>
                     @endforeach
                 </select>

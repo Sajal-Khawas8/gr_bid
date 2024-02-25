@@ -130,11 +130,16 @@ class UserController extends Controller
 
         // Checking if file has been uploaded
         if ($req->hasFile("profilePicture")) {
-            // $userData["image"] = $attributes["profilePicture"]->store("users");
-            !empty($user->image) && Storage::delete($user->image->url);
-            $user->image()->update([
-                "url" => $attributes["profilePicture"]->store("users")
-            ]);
+            if (empty($user->image)) {
+                $user->image()->create([
+                    "url" => $attributes["profilePicture"]->store("users")
+                ]);
+            } else {
+                Storage::delete($user->image->url);
+                $user->image()->update([
+                    "url" => $attributes["profilePicture"]->store("users")
+                ]);
+            }
         }
 
         // Updating user data
@@ -151,7 +156,7 @@ class UserController extends Controller
         Inventory::where("added_by", $user->uuid)->update(["added_by" => auth()->user()->uuid]);
         Event::where("organized_by", $user->uuid)->update(["organized_by" => auth()->user()->uuid]);
         UserLocation::where("user_id", $user->uuid)->delete();
-        Storage::delete($user->image->url);
+        Storage::delete($user->image?->url);
         $user->image()->delete();
         $user->delete();
         return redirect("/dashboard/users")->with("success", "User removed Successfully.");

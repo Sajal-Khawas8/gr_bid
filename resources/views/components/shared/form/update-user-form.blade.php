@@ -7,13 +7,14 @@
             <x-shared.form.input name="name" placeholder="Full Name" :value="old('name', $user->name)" />
             <x-shared.form.error name="name" />
         </div>
-        <div class="grid grid-cols-5 gap-8">
-            <div class="col-span-3">
+        <div class="flex items-center gap-8">
+            <div class="flex-1">
                 <x-shared.form.input type="email" name="email" placeholder="Email Address"
                     :value="old('email', $user->email)" />
                 <x-shared.form.error name="email" />
             </div>
-            <div class="col-span-2">
+            @role('admin')
+            <div class="w-36">
                 @php
                 $options=['manager', 'employee'];
                 @endphp
@@ -21,6 +22,7 @@
                     :dataToMatch="$user->roles->first()->name" />
                 <x-shared.form.error name="role" />
             </div>
+            @endrole
         </div>
 
         <div>

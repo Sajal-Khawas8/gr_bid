@@ -11,16 +11,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\EventsController as clientEventsController;
 use App\Http\Controllers\client\UserController as ClientUserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(AuthController::class)->group(function () {
-    Route::middleware('guest')->group(function () {
-        Route::get('/login', 'create')->name('login');
-        Route::post('/login', 'store')->name('login');
-    });
+// Route::controller(AuthController::class)->group(function () {
+//     Route::middleware('guest')->group(function () {
+//         Route::get('/login', 'create')->name('login');
+//         Route::post('/login', 'store')->name('login');
+//     });
 
-    Route::post('/logout', 'destroy')->middleware('auth')->name('logout');
-});
+//     Route::post('/logout', 'destroy')->middleware('auth')->name('logout');
+// });
 
 Route::controller(ClientUserController::class)->group(function () {
     Route::middleware('guest')->group(function () {
@@ -103,10 +104,12 @@ Route::middleware(['auth', 'role:admin|manager|employee'])->prefix('/dashboard')
         Route::delete('/deleteLocation/{location}', 'destroy');
     });
 
-    Route::controller(AuthUserController::class)->prefix('/settings')->group(function () {
+    Route::controller(ProfileController::class)->prefix('/settings')->group(function () {
         Route::get('/', 'show')->name('settings');
         Route::get('/update', 'edit');
         Route::put('/update', 'update');
         Route::delete('/delete', 'destroy');
     });
 });
+
+require __DIR__.'/auth.php';
